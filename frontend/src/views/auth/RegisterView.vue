@@ -3,7 +3,7 @@
     <div class="w-full max-w-md">
       <div class="text-center mb-8">
         <RouterLink to="/" class="inline-flex items-center gap-2 mb-6">
-          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-sky-500 to-violet-600 flex items-center justify-center"><span class="text-white font-black">H</span></div>
+          <BrandLogo :size="40" />
           <span class="font-black text-2xl text-white">HubPrice<span class="text-sky-400">.AI</span></span>
         </RouterLink>
         <h1 class="text-3xl font-black text-white mb-2">Create Account</h1>
@@ -53,6 +53,7 @@
 import { ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import BrandLogo from '@/components/BrandLogo.vue'
 const auth = useAuthStore(); const router = useRouter()
 const form = ref({ name: '', email: '', password: '', password_confirmation: '', role: 'buyer' })
 const loading = ref(false); const error = ref('')

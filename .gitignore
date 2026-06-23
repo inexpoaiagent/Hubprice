@@ -35,6 +35,18 @@ Thumbs.db
 *.sql
 write_*.mjs
 proposal_*.js
+create_final_zip.mjs
+
+# Secrets / env (never commit)
+**/.env
+**/.env.*
+!**/.env.example
+
+# Deployment bundles & one-off fix scripts (contain credentials)
+/deploy/
+/fix_*/
+/debug.php
+/test_post.php
 
 # Claude
 .claude/launch.json

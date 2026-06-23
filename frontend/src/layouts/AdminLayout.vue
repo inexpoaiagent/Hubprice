@@ -3,7 +3,7 @@
     <aside class='w-64 shrink-0 flex flex-col' style='background:#080d13;border-right:1px solid rgba(111,255,210,0.1)'>
       <div class='p-5' style='border-bottom:1px solid rgba(255,255,255,0.06)'>
         <RouterLink to='/' class='flex items-center gap-2 mb-2'>
-          <div class='w-7 h-7 rounded-lg flex items-center justify-center font-black text-xs' style='background:linear-gradient(135deg,#6fffd2,#56d8ff);color:#05070b'>H</div>
+          <BrandLogo :size="28" />
           <span class='font-black text-sm' style='color:#f0f6fc'>HubPrice<span style='color:#6fffd2'>.AI</span></span>
         </RouterLink>
         <span class='text-xs px-2 py-0.5 rounded-full font-semibold' style='background:rgba(111,255,210,0.1);color:#6fffd2;border:1px solid rgba(111,255,210,0.2)'>Admin Panel</span>
@@ -54,6 +54,7 @@
 import { RouterLink, RouterView, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { h, defineComponent, computed } from 'vue'
+import BrandLogo from '@/components/BrandLogo.vue'
 
 const route = useRoute()
 const auth = useAuthStore()

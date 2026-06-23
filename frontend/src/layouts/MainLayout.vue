@@ -9,7 +9,7 @@
 
           <!-- Logo -->
           <RouterLink to="/" style="display:flex;align-items:center;gap:10px;text-decoration:none">
-            <div style="width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:14px;background:linear-gradient(135deg,#6fffd2,#56d8ff);color:#05070b">H</div>
+            <BrandLogo :size="34" />
             <span style="font-weight:900;font-size:17px;color:#f0f6fc">Hub<span style="background:linear-gradient(135deg,#6fffd2,#56d8ff);-webkit-background-clip:text;-webkit-text-fill-color:transparent">Price</span><span style="color:#6fffd2">.AI</span></span>
           </RouterLink>
 
@@ -176,7 +176,7 @@
         <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr 1fr;gap:32px;margin-bottom:48px" class="grid-cols-1 md:grid-cols-5">
           <div>
             <div style="display:flex;align-items:center;gap:10px;margin-bottom:16px">
-              <div style="width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;background:linear-gradient(135deg,#6fffd2,#56d8ff);color:#05070b">H</div>
+              <BrandLogo :size="32" />
               <span style="font-weight:900;font-size:16px;color:#f0f6fc">HubPrice<span style="color:#6fffd2">.AI</span></span>
             </div>
             <p style="font-size:13px;line-height:1.7;color:#6e7f96;margin-bottom:20px">AI-powered price intelligence for North Cyprus real estate and automotive markets.</p>
@@ -236,6 +236,7 @@ import { RouterLink, useRoute, useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import AnimatedBackground from '@/components/AnimatedBackground.vue'
 import FloatingAI from '@/components/FloatingAI.vue'
+import BrandLogo from '@/components/BrandLogo.vue'
 
 const auth = useAuthStore()
 const router = useRouter()

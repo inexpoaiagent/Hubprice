@@ -6,7 +6,7 @@
     <div class="relative w-full max-w-md">
       <div class="text-center mb-10">
         <RouterLink to="/" class="inline-flex items-center gap-2.5">
-          <div class="w-10 h-10 rounded-xl flex items-center justify-center font-black text-base" style="background:linear-gradient(135deg,#6fffd2,#56d8ff);color:#05070b">H</div>
+          <BrandLogo :size="40" />
           <span class="font-black text-2xl" style="color:#f0f6fc">Hub<span class="gradient-text">Price</span><span style="color:#6fffd2">.AI</span></span>
         </RouterLink>
         <p class="mt-3 text-sm" style="color:#6e7f96">Sign in to your account</p>
@@ -41,12 +41,13 @@
 import { ref } from "vue"
 import { RouterLink, useRouter, useRoute } from "vue-router"
 import { useAuthStore } from "@/stores/auth"
+import BrandLogo from "@/components/BrandLogo.vue"
 const auth = useAuthStore(); const router = useRouter(); const route = useRoute()
 const form = ref({ email: "", password: "" }); const loading = ref(false); const error = ref("")
 async function handleLogin() {
   loading.value = true; error.value = ""
   try {
-    await auth.login(form.value)
+    await auth.login(form.value.email, form.value.password)
     const redirect = route.query.redirect as string
     if (auth.isAdmin) router.push(redirect || "/admin")
     else router.push(redirect || "/dashboard")
