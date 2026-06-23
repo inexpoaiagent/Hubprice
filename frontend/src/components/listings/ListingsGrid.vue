@@ -1,0 +1,130 @@
+<template>
+  <div>
+    <!-- Filters -->
+    <div class="flex flex-wrap gap-3 mb-8">
+      <input
+        v-model="filters.search"
+        @input="debouncedFetch"
+        placeholder="Search..."
+        class="bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2 text-sm outline-none focus:border-sky-500 transition w-64"
+      />
+      <input
+        v-model="filters.city"
+        @input="debouncedFetch"
+        placeholder="City..."
+        class="bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2 text-sm outline-none focus:border-sky-500 transition w-40"
+      />
+      <input v-model="filters.min_price" @input="debouncedFetch" type="number" placeholder="Min price"
+        class="bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2 text-sm outline-none w-32" />
+      <input v-model="filters.max_price" @input="debouncedFetch" type="number" placeholder="Max price"
+        class="bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2 text-sm outline-none w-32" />
+      <select v-model="filters.sort" @change="fetchListings" class="bg-slate-900 border border-slate-700 text-white rounded-xl px-4 py-2 text-sm outline-none">
+        <option value="newest">Newest First</option>
+        <option value="price_asc">Price: Low to High</option>
+        <option value="price_desc">Price: High to Low</option>
+        <option value="most_viewed">Most Viewed</option>
+        <option value="trust_score">Highest Trust</option>
+      </select>
+    </div>
+
+    <!-- Results count -->
+    <div class="flex items-center justify-between mb-6">
+      <p class="text-slate-400 text-sm">
+        {{ listingsStore.pagination.total }} listings found
+      </p>
+    </div>
+
+    <!-- Grid -->
+    <div v-if="listingsStore.loading" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div v-for="i in 8" :key="i" class="bg-slate-900 rounded-2xl h-80 animate-pulse" />
+    </div>
+
+    <div v-else-if="listingsStore.listings.length === 0" class="text-center py-20 text-slate-500">
+      <p class="text-5xl mb-4">🔍</p>
+      <p class="text-xl font-semibold mb-2">No listings found</p>
+      <p class="text-sm">Try adjusting your search filters.</p>
+    </div>
+
+    <div v-else class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <ListingCard v-for="listing in listingsStore.listings" :key="listing.id" :listing="listing" />
+    </div>
+
+    <!-- Pagination -->
+    <div v-if="listingsStore.pagination.last_page > 1" class="flex items-center justify-center gap-2 mt-12">
+      <button
+        v-for="p in pageNumbers"
+        :key="p"
+        @click="goToPage(p)"
+        class="w-10 h-10 rounded-lg text-sm font-medium transition"
+        :class="p === listingsStore.pagination.current_page
+          ? 'bg-sky-500 text-white'
+          : 'bg-slate-900 text-slate-400 hover:text-white border border-slate-800'"
+      >
+        {{ p }}
+      </button>
+    </div>
+  </div>
+</template>
+
+<script setup lang="ts">
+import { ref, computed, onMounted, watch } from 'vue'
+import ListingCard from './ListingCard.vue'
+import { useListingsStore } from '@/stores/listings'
+
+const props = defineProps<{
+  type?: string
+  initialSearch?: string
+  initialType?: string,
+  initialCity?: string
+}>()
+
+const listingsStore = useListingsStore()
+
+const filters = ref({
+  search: props.initialSearch || '',
+  city: '',
+  min_price: '',
+  max_price: '',
+  sort: 'newest',
+  type: props.type || props.initialType || '',
+  city: props.initialCity || '',
+  page: 1,
+})
+
+let debounceTimer: any
+
+function debouncedFetch() {
+  clearTimeout(debounceTimer)
+  debounceTimer = setTimeout(fetchListings, 400)
+}
+
+async function fetchListings() {
+  const params: Record<string, any> = { page: filters.value.page, sort: filters.value.sort }
+  if (filters.value.type) params.type = filters.value.type
+  if (filters.value.search) params.search = filters.value.search
+  if (filters.value.city) params.city = filters.value.city
+  if (filters.value.min_price) params.min_price = filters.value.min_price
+  if (filters.value.max_price) params.max_price = filters.value.max_price
+  await listingsStore.fetchListings(params)
+}
+
+function goToPage(p: number) {
+  filters.value.page = p
+  fetchListings()
+}
+
+const pageNumbers = computed(() => {
+  const total = listingsStore.pagination.last_page
+  const current = listingsStore.pagination.current_page
+  const pages = []
+  for (let i = Math.max(1, current - 2); i <= Math.min(total, current + 2); i++) {
+    pages.push(i)
+  }
+  return pages
+})
+
+watch(() => props.initialSearch, (v) => { filters.value.search = v || ''; fetchListings() })
+watch(() => props.initialType, (v) => { filters.value.type = v || ''; fetchListings() })
+watch(() => props.initialCity, (v) => { filters.value.city = v || ''; fetchListings() })
+onMounted(fetchListings)
+</script>

@@ -1,0 +1,30 @@
+<template>
+  <div class="p-8 max-w-2xl">
+    <h1 class="text-3xl font-black mb-1" style="color:#f0f6fc">Edit <span class="gradient-text">Listing</span></h1>
+    <p class="text-sm mb-8" style="color:#6e7f96">Update your listing details</p>
+    <div v-if="loading" class="space-y-4"><div v-for="i in 5" :key="i" class="h-12 rounded-xl animate-pulse" style="background:#0d1117"></div></div>
+    <form v-else @submit.prevent="save" class="space-y-5 rounded-2xl p-6" style="background:#0d1117;border:1px solid rgba(255,255,255,0.07)">
+      <div><label class="block text-xs font-medium mb-2" style="color:#6e7f96">Title</label><input v-model="form.title" required class="w-full px-4 py-3 rounded-xl text-sm outline-none" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#f0f6fc" /></div>
+      <div><label class="block text-xs font-medium mb-2" style="color:#6e7f96">Description</label><textarea v-model="form.description" rows="4" class="w-full px-4 py-3 rounded-xl text-sm resize-none outline-none" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#f0f6fc"></textarea></div>
+      <div class="grid grid-cols-2 gap-4">
+        <div><label class="block text-xs font-medium mb-2" style="color:#6e7f96">Price</label><input v-model="form.price" type="number" required class="w-full px-4 py-3 rounded-xl text-sm outline-none" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#f0f6fc" /></div>
+        <div><label class="block text-xs font-medium mb-2" style="color:#6e7f96">Currency</label><select v-model="form.currency" class="w-full px-4 py-3 rounded-xl text-sm" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:#f0f6fc"><option>GBP</option><option>TRY</option><option>USD</option><option>EUR</option></select></div>
+      </div>
+      <div v-if="msg" class="text-xs py-2 px-3 rounded-lg" :style="msg.ok?'background:rgba(111,255,210,0.08);color:#6fffd2':'background:rgba(239,68,68,0.08);color:#ef4444'">{{ msg.text }}</div>
+      <div class="flex gap-3">
+        <button type="submit" :disabled="saving" class="flex-1 py-3 font-semibold text-sm rounded-xl disabled:opacity-50" style="background:linear-gradient(135deg,#6fffd2,#56d8ff);color:#05070b">{{ saving?'Saving...':'Save Changes' }}</button>
+        <RouterLink to="/dashboard/listings" class="flex-1 py-3 text-sm text-center rounded-xl font-medium" style="border:1px solid rgba(255,255,255,0.1);color:#c5d3e4">Cancel</RouterLink>
+      </div>
+    </form>
+  </div>
+</template>
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
+import { RouterLink, useRoute, useRouter } from 'vue-router'
+import client from '@/api/client'
+const route = useRoute(); const router = useRouter()
+const loading = ref(true); const saving = ref(false); const msg = ref<any>(null)
+const form = ref({ title:'', description:'', price:0, currency:'GBP' })
+onMounted(async () => { try { const r = await client.get('/listings/'+route.params.id); form.value={title:r.data.title,description:r.data.description,price:r.data.price,currency:r.data.currency} } catch {} finally { loading.value=false } })
+async function save() { saving.value=true; msg.value=null; try { await client.put('/listings/'+route.params.id, form.value); msg.value={ok:true,text:'Saved!'}; setTimeout(()=>router.push('/dashboard/listings'),1000) } catch { msg.value={ok:false,text:'Failed.'} } finally { saving.value=false } }
+</script>
